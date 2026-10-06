@@ -24,6 +24,7 @@ st.set_page_config(
 PROJECT_ROOT = Path(__file__).resolve().parent
 MODEL_PATH = PROJECT_ROOT / "models" / "final_model.joblib"
 PREPROCESSOR_PATH = PROJECT_ROOT / "models" / "preprocessor.joblib"
+METADATA_PATH = PROJECT_ROOT / "models" / "final_model_metadata.joblib"
 
 
 # ------------------------------------------------------------
@@ -72,12 +73,16 @@ def load_artifacts():
 
     model = joblib.load(MODEL_PATH)
     preprocessor = joblib.load(PREPROCESSOR_PATH)
-
-    return model, preprocessor
+    threshold = 0.50
+    metadata = {}
+    if METADATA_PATH.exists():
+        metadata = joblib.load(METADATA_PATH)
+        threshold = float(metadata.get("threshold", 0.50) or 0.50)
+    return model, preprocessor, threshold, metadata
 
 
 try:
-    model, preprocessor = load_artifacts()
+    model, preprocessor, threshold, model_metadata = load_artifacts()
 except Exception as exc:
     st.error("The application could not load the saved ML artifacts.")
     st.code(str(exc))
@@ -515,17 +520,17 @@ if submitted:
         # removed, so Candidate_ID is intentionally not included here.
         transformed_input = preprocessor.transform(model_input)
 
-        prediction = int(model.predict(transformed_input)[0])
-
         if hasattr(model, "predict_proba"):
             probabilities = model.predict_proba(transformed_input)[0]
             rejected_probability = float(probabilities[0])
             accepted_probability = float(probabilities[1])
+            prediction = int(accepted_probability >= threshold)
         else:
             # Fallback for models without predict_proba.
             decision = float(model.decision_function(transformed_input)[0])
             accepted_probability = 1 / (1 + np.exp(-decision))
             rejected_probability = 1 - accepted_probability
+            prediction = int(accepted_probability >= threshold)
 
         st.divider()
         st.subheader("📊 Prediction Result")
@@ -576,7 +581,8 @@ if submitted:
 # ------------------------------------------------------------
 with st.sidebar:
     st.header("About the Model")
-    st.write("**Final model:** SVM")
+    st.write("**Final model:** Gradient Boosting")
+    st.write(f"**Classification threshold:** {threshold:.2f}")
     st.write("**Training rows:** 39,888")
     st.write("**Testing rows:** 9,972")
     st.write("**Model features:** 102 encoded features")
