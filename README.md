@@ -1,552 +1,267 @@
-Job Acceptance Prediction System
+🎯 Job Acceptance Prediction System
+A machine learning application that predicts whether a candidate is likely to accept or reject a job offer based on academic background, experience, skills, interview performance, salary expectations, company/job information, and other candidate attributes.
+The project includes a complete machine learning workflow covering data cleaning, exploratory data analysis, feature engineering, model comparison, SMOTE experimentation, hyperparameter tuning, threshold optimization, final model selection, and a Streamlit prediction application.
+📌 Project Overview
+Recruitment and placement teams work with large volumes of candidate information when evaluating job offers. This project uses historical candidate data to build a binary classification model that predicts:
+- 1 → Accepted
+- 0 → Rejected
+The final model is deployed through a Streamlit web application, where users can enter candidate details and receive an acceptance prediction with the model's probability output.
+🎯 Objectives
+- Clean and preprocess real-world candidate data.
+- Analyze candidate characteristics and their relationship with job acceptance.
+- Create meaningful analytical features.
+- Compare multiple machine learning classification algorithms.
+- Evaluate class-wise Precision, Recall, and F1-score.
+- Experiment with SMOTE to address class imbalance.
+- Perform fast hyperparameter tuning.
+- Optimize the classification threshold.
+- Select the model based on balanced class performance using Macro F1.
+- Deploy the final model through a Streamlit application.
+📊 Dataset
+The original dataset contains:
+- 50,000 candidate records
+- 36 original columns
+- Binary target: Job_Accepted
+Original Target Distribution
+Target	Candidates	Percentage
+Accepted	31,935	63.87%
+Rejected	18,065	36.13%
 
-1. Project Overview
 
-The Job Acceptance Prediction System is a machine-learning classification project that predicts whether a candidate is likely to accept a job offer based on candidate characteristics and job-offer attributes.
-
-The target variable is:
-
-Job_Accepted = 1 → Accepted
-
-Job_Accepted = 0 → Rejected
-
-The project includes data cleaning, exploratory data analysis, feature engineering, preprocessing, model training and comparison, model validation, and a Streamlit prediction application.
-
-2. Problem Statement
-
-Recruitment and placement teams work with candidate information such as education, experience, technical skills, interview performance, salary expectations, job characteristics, and company attributes.
-
-The objective of this project is to build a machine-learning classification model that uses these attributes to predict the candidate's job acceptance outcome.
-
-The trained model is integrated into a Streamlit application so that a new candidate's information can be entered and a prediction can be generated.
-
-3. Dataset
-
-The raw dataset contains:
-
-50,000 records
-
-36 columns
-
-The target column is:
-
-Job_Accepted
-
-The cleaned dataset contains:
-
-49,860 records
-
-36 columns
-
-0 missing values
-
-0 exact duplicate rows
-
-0 duplicate-like records remaining
-
+After duplicate removal and data cleaning:
+- 49,860 records
+- 36 original columns
+- 0 missing values
+- 0 exact duplicate records
+- 0 duplicate-like records remaining
+- 0 invalid numeric values remaining
 The cleaned target distribution is approximately:
-
-Accepted: 63.85%
-
-Rejected: 36.15%
-
-4. Project Workflow
-
-Raw Dataset
-     |
-     v
-Notebook 01
+- Accepted: 63.85%
+- Rejected: 36.15%
+🔄 Machine Learning Workflow
+Raw Candidate Dataset
+        ↓
 Data Cleaning & Preprocessing
-     |
-     v
-Cleaned Dataset
-     |
-     v
-Notebook 02
+        ↓
 Exploratory Data Analysis
-     |
-     v
-Data Understanding
-     |
-     v
-Notebook 03
+        ↓
 Feature Engineering
-+ Train/Test Split
-+ Encoding
-+ Scaling
-     |
-     v
-Model-Ready Data
-     |
-     v
-Notebook 04
-Model Training & Comparison
-     |
-     v
-Final SVM Model
-     |
-     v
+        ↓
+Train / Test Split
+        ↓
+Data Preprocessing & Encoding
+        ↓
+Baseline Model Comparison
+        ↓
+SMOTE Experiment
+        ↓
+Hyperparameter Tuning
+        ↓
+Class-wise Evaluation
+        ↓
+Threshold Optimization
+        ↓
+Macro F1 Comparison
+        ↓
+Final Model Selection
+        ↓
+Saved Model + Preprocessor
+        ↓
 Streamlit Application
-     |
-     v
-New Candidate Input
-     |
-     v
-Accepted / Rejected Prediction
-
-5. Notebook 01 — Data Cleaning & Preprocessing
-
-Notebook 01 prepares the raw dataset for analysis and machine learning.
-
-Main activities
-
-Load the raw CSV
-
-Inspect dataset structure and data types
-
-Analyze missing values
-
-Identify exact duplicates
-
-Identify duplicate-like records
-
-Standardize categorical values
-
-Validate numerical ranges
-
-Validate salary fields
-
-Handle missing values
-
-Validate the target variable
-
-Perform final quality checks
-
-Save the cleaned dataset
-
-Output
-
+📓 Project Notebooks
+01 — Data Cleaning & Preprocessing
+File:
+notebooks/01_data_cleaning_preprocessing.ipynb
+Main activities:
+- Load the raw dataset.
+- Inspect shape, columns, data types, and statistics.
+- Analyze missing values.
+- Identify exact duplicates.
+- Identify duplicate-like records excluding Candidate_ID.
+- Standardize categorical values.
+- Validate numeric ranges.
+- Handle invalid salary values.
+- Impute missing numerical values using the median.
+- Impute missing categorical values using the mode.
+- Validate the target variable.
+- Save the cleaned dataset.
+Output:
 data/processed/cleaned_job_acceptance_data.csv
-
-6. Notebook 02 — Exploratory Data Analysis
-
-Notebook 02 explores the cleaned dataset without training a machine-learning model.
-
-Main analysis
-
-Dataset structure and quality
-
-Target distribution
-
-Numerical feature distributions
-
-Categorical feature distributions
-
-Accepted vs rejected comparisons
-
-Salary analysis
-
-Experience analysis
-
-Skills analysis
-
-Interview performance analysis
-
-Score-band analysis
-
-Correlation analysis
-
-Important numerical relationships with Job_Accepted
-
-The completed EDA identified the following correlations among the analyzed numerical features:
-
-Feature
-
-Correlation
-
-Interview_Score
-
-0.177
-
-Skills_Match_Percentage
-
-0.161
-
-Technical_Skills_Score
-
-0.115
-
-Soft_Skills_Score
-
-0.112
-
-Communication_Score
-
-0.112
-
-These values describe relationships in this dataset; they do not mean that any individual feature alone determines job acceptance.
-
-EDA outputs
-
-outputs/eda_data_quality_summary.csv
-outputs/eda_target_distribution.csv
-outputs/eda_accepted_vs_rejected_means.csv
-outputs/eda_target_correlations.csv
-
-7. Notebook 03 — Feature Engineering & Train/Test Split
-
-Notebook 03 prepares the data for machine learning.
-
-Derived features
-
-The project creates:
-
-Experience_Category
-
-Academic_Performance_Band
-
-Skills_Match_Level
-
-Interview_Performance_Category
-
-Salary_Gap
-
-Salary_Match_Percentage
-
-Candidate_ID is excluded from the model inputs.
-
-The project does not create a target-derived placement probability feature because using information derived from the target could introduce target leakage.
-
-Train/test split
-
-The data is divided using a stratified 80/20 split:
-
-Training rows: 39,888
-Testing rows:   9,972
-
-The acceptance rate is preserved between the training and testing sets.
-
-Preprocessing
-
-Numerical features are processed using:
-
-StandardScaler
-
-Categorical features are processed using:
-
-OneHotEncoder
-
-The preprocessing pipeline is fitted using the training data and then applied to the test data.
-
-Validation
-
-Input model features before encoding: 40
-Final encoded features: 102
-Train/test overlap: 0
-Training matrix contains NaN: False
-Test matrix contains NaN: False
-
-Saved artifacts
-
-data/processed/feature_engineered_job_acceptance_data.csv
-
-models/preprocessor.joblib
-models/feature_names.joblib
-models/train_test_data.joblib
-
-8. Notebook 04 — Model Training & Comparison
-
-Notebook 04 trains and evaluates five classification models:
-
-Logistic Regression
-
-Decision Tree
-
-Random Forest
-
-Gradient Boosting
-
-Support Vector Machine (SVM)
-
-The models are evaluated using:
-
-Accuracy
-
-Precision
-
-Recall
-
-F1 Score
-
-ROC-AUC
-
-Confusion Matrix
-
-ROC Curve
-
-Classification Report
-
-Final candidate model
-
-The completed Notebook 04 selected:
-
-SVM
-
-The selection was based on the highest F1 Score among the evaluated models.
-
-Final SVM test-set metrics
-
-Metric
-
-Score
-
-Accuracy
-
-67.26%
-
-Precision
-
-68.38%
-
-Recall
-
-90.62%
-
-F1 Score
-
-77.95%
-
-ROC-AUC
-
-66.34%
-
-Interpretation
-
-The final model produced a high recall relative to its precision. This means it identified a large proportion of the candidates who actually accepted the offer, while also producing some false-positive acceptance predictions.
-
-The ROC-AUC indicates the model has measurable ability to distinguish accepted and rejected candidates, but the model is not a perfect classifier.
-
-These metrics should be presented as the performance of this trained model on this project's held-out test set.
-
-Saved model
-
-models/final_model.joblib
-
-Notebook 04 also reloads the saved model and verifies that its predictions match the original model.
-
-9. Streamlit Application
-
-The project includes a Streamlit application:
-
-app.py
-
-The application loads:
-
-models/final_model.joblib
-models/preprocessor.joblib
-
-Application workflow
-
-User enters candidate information
-          |
-          v
-Feature engineering
-          |
-          v
-Saved preprocessing pipeline
-          |
-          v
-102 encoded model features
-          |
-          v
-Saved SVM model
-          |
-          v
-Prediction
-          |
-          +----> ACCEPTED
-          |
-          +----> REJECTED
-
-The application also displays the model's acceptance and rejection probability outputs.
-
-The displayed probability is a model output and should not be interpreted as a guarantee of a candidate's real-world decision.
-
-10. Application Testing
-
-The Streamlit application was tested using two substantially different candidate profiles.
-
-Test 1
-
-Prediction: ACCEPTED
-Acceptance probability: 71.19%
-Rejection probability: 28.81%
-
-Test 2
-
-Prediction: REJECTED
-Acceptance probability: 48.11%
-Rejection probability: 51.89%
-
-Both probability pairs sum to 100%, and the application successfully generated different predictions for the two input profiles.
-
-11. Project Structure
-
-job-acceptance-prediction-system/
-│
-├── data/
-│   ├── raw/
-│   │   └── job_acceptance_raw.csv
-│   │
-│   └── processed/
-│       ├── cleaned_job_acceptance_data.csv
-│       └── feature_engineered_job_acceptance_data.csv
-│
-├── notebooks/
-│   ├── 01_data_cleaning_preprocessing.ipynb
-│   ├── 02_exploratory_data_analysis.ipynb
-│   ├── 03_feature_engineering_train_test_split.ipynb
-│   └── 04_model_training_and_comparison.ipynb
-│
-├── models/
-│   ├── preprocessor.joblib
-│   ├── feature_names.joblib
-│   ├── train_test_data.joblib
-│   └── final_model.joblib
-│
-├── outputs/
-│   ├── eda_data_quality_summary.csv
-│   ├── eda_target_distribution.csv
-│   ├── eda_accepted_vs_rejected_means.csv
-│   ├── eda_target_correlations.csv
-│   └── model_comparison_results.csv
-│
-├── app.py
-├── requirements.txt
-└── README.md
-
-12. Technologies Used
-
-Python 3.11.9
-
-Pandas
-
-NumPy
-
-Matplotlib
-
-Seaborn
-
-Scikit-learn
-
-Joblib
-
-Streamlit
-
-Jupyter Notebook
-
-13. How to Run the Project
-
-Step 1 — Activate the virtual environment
-
-From Git Bash:
-
-cd "/d/job acceptance prediction system"
-source .venv/Scripts/activate
-
-Step 2 — Move to the project directory
-
-In the current project setup, the project files are already located at:
-
-/d/job acceptance prediction system
-
-Verify:
-
-ls
-
-You should see:
-
-app.py
-data/
-models/
-notebooks/
+Final cleaned dataset:
+49,860 rows × 36 columns
+02 — Exploratory Data Analysis
+File:
+notebooks/02_exploratory_data_analysis.ipynb
+The EDA notebook analyzes:
+- Overall job acceptance distribution.
+- Candidate characteristics.
+- Accepted vs. rejected candidate averages.
+- Numerical relationships with job acceptance.
+- Correlations between numerical variables.
+- Data quality.
+Some of the stronger numerical relationships with the target include:
+Feature	Correlation
+Interview Score	0.177
+Skills Match Percentage	0.161
+Technical Skills Score	0.115
+Soft Skills Score	0.112
+Communication Score	0.112
+
+
+EDA outputs are stored under:
 outputs/
-Readme.md
-requirements.txt
+03 — Feature Engineering & Train/Test Split
+File:
+notebooks/03_feature_engineering_train_test_split.ipynb
+The notebook creates the following derived features:
+- Experience_Category
+- Academic_Performance_Band
+- Skills_Match_Level
+- Interview_Performance_Category
+- Salary_Gap
+- Salary_Match_Percentage
+The target variable is kept separate to avoid target leakage.
+The dataset is split using:
+- 80% Training
+- 20% Testing
+- random_state = 42
+- Stratified split
+Result:
+Dataset	Rows
+Training	39,888
+Testing	9,972
 
-Step 3 — Start Streamlit
 
+After preprocessing and one-hot encoding:
+102 model features
+The fitted preprocessing pipeline is saved as:
+models/preprocessor.joblib
+🤖 04 — Model Optimization & Balanced Model Selection
+File:
+notebooks/04_model_optimization_balanced_complete.ipynb
+This notebook performs the final model evaluation and selection.
+Baseline Models
+The following models were evaluated:
+1. Logistic Regression
+2. Decision Tree
+3. Random Forest
+4. Gradient Boosting
+5. Support Vector Machine (SVM)
+Additional Experiments
+The notebook also includes:
+- SMOTE experiment
+- Fast hyperparameter tuning
+- Class-wise Precision
+- Class-wise Recall
+- Class-wise F1-score
+- Macro F1
+- Threshold testing
+- Balanced model selection
+- Final model saving
+- Saved-model reload verification
+🏆 Final Model
+The final model was selected based on Macro F1, because the project goal was not simply to maximize performance for the more common Accepted class.
+The selected model is:
+Gradient Boosting with a classification threshold of 0.60
+
+Final Performance
+Metric	Result
+Accuracy	66.19%
+Rejected Precision	53.23%
+Rejected Recall	53.31%
+Rejected F1	53.27%
+Accepted Precision	73.54%
+Accepted Recall	73.47%
+Accepted F1	73.51%
+Macro F1	63.39%
+
+
+Why Gradient Boosting?
+The original SVM baseline achieved a higher overall F1 for the Accepted class, but its performance on the Rejected class was considerably weaker.
+The original SVM results included:
+Metric	SVM Baseline
+Rejected Recall	25.96%
+Rejected F1	36.44%
+Accepted F1	77.95%
+Macro F1	57.20%
+Accuracy	67.26%
+
+
+After threshold optimization, Gradient Boosting provided a substantially more balanced result:
+Metric	Final Gradient Boosting
+Rejected Recall	53.31%
+Rejected F1	53.27%
+Accepted F1	73.51%
+Macro F1	63.39%
+Accuracy	66.19%
+
+
+Therefore, Gradient Boosting with a 0.60 threshold was selected as the final model because it achieved the highest Macro F1 among the evaluated configurations.
+💾 Saved Model Artifacts
+The application uses the following saved files:
+models/
+├── final_model.joblib
+├── final_model_metadata.joblib
+├── preprocessor.joblib
+└── train_test_data.joblib
+final_model.joblib
+Contains the selected Gradient Boosting model.
+final_model_metadata.joblib
+Contains the final model metadata, including the classification threshold used by the Streamlit application.
+preprocessor.joblib
+Contains the fitted preprocessing pipeline used to transform application inputs into the model's encoded feature representation.
+train_test_data.joblib
+Contains the prepared training and testing data used during model development and evaluation.
+🖥️ Streamlit Application
+The project includes an interactive Streamlit application:
+app.py
+The application allows users to enter candidate information such as:
+- Age
+- Gender
+- Education Level
+- Degree Field
+- University Tier
+- CGPA
+- Years of Experience
+- Previous Companies
+- Internship Experience
+- Certifications
+- Technical Skills
+- Soft Skills
+- Skills Match
+- Aptitude
+- Communication
+- Interview Score
+- Interview Rounds
+- Job Role
+- Industry
+- Company Tier
+- Company Size
+- Job Type
+- Work Mode
+- Job Location
+- Preferred Location
+- Relocation Willingness
+- Competition Level
+- Expected Salary
+- Offered Salary
+- Career Growth
+- Benefits
+- Job Security
+- Notice Period
+- Offer-to-Joining Days
+The application performs the same feature engineering and preprocessing used during model training.
+The final prediction uses the saved 0.60 classification threshold.
+🚀 Running the Application
+1. Clone the Repository
+git clone https://github.com/MadavSelvam/job-placement-prediction-system.git
+cd job-placement-prediction-system
+2. Create a Virtual Environment
+python -m venv .venv
+Windows
+.venv\Scripts\activate
+3. Install Dependencies
+pip install -r requirements.txt
+4. Run Streamlit
 streamlit run app.py
-
-The application should open at:
-
-http://localhost:8501
-
-14. Key Machine-Learning Concepts Demonstrated
-
-This project demonstrates:
-
-Data cleaning
-
-Missing-value handling
-
-Duplicate detection
-
-Categorical standardization
-
-Exploratory Data Analysis
-
-Feature engineering
-
-Target leakage prevention
-
-Train/test splitting
-
-Stratification
-
-One-Hot Encoding
-
-Standardization
-
-Classification
-
-Logistic Regression
-
-Decision Trees
-
-Random Forest
-
-Gradient Boosting
-
-Support Vector Machines
-
-Accuracy
-
-Precision
-
-Recall
-
-F1 Score
-
-ROC-AUC
-
-Confusion Matrix
-
-ROC Curve
-
-Model persistence with Joblib
-
-Streamlit deployment/application development
-
-15. Limitations
-
-The model's predictions are based on patterns learned from the provided dataset.
-
-The final model achieved:
-
-Accuracy = 67.26%
-ROC-AUC  = 66.34%
-
-Therefore, predictions should be treated as model-generated estimates rather than guaranteed outcomes.
-
-The dataset may not represent every real-world candidate, employer, industry, or labor-market condition.
+The application will open in your browser.
